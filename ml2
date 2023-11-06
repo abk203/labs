@@ -1,0 +1,31 @@
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn import metrics
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC, LinearSVC
+from sklearn import preprocessing
+
+df = pd.read_csv("/Users/abhijeetkhandagale/Extras/beproject/emails.csv")
+df
+
+df.drop(columns=["Email No."], inplace=True)
+
+x = df.iloc[:, :df.shape[1] - 1]
+y = df.iloc[:, -1]
+print(x)
+
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=1)
+
+models = {
+    "K- Nearest Neighbors" : KNeighborsClassifier(n_neighbors=2),
+    "Linear SVM" : LinearSVC(max_iter=900000),
+    "Polynomial SVM" : SVC(kernel="poly", degree=2, random_state=8)
+}
+
+for model_name, model in models.items():
+    y_pred = model.fit(x_train, y_train).predict(x_test)
+    print(f"accuracy for {model_name} is {metrics.accuracy_score(y_test, y_pred)}")
+
