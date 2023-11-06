@@ -1,0 +1,34 @@
+def fractional_knapsack(items, capacity):
+    for item in items:
+        item['ratio'] = item['value'] / item['weight']
+    #print(items)
+
+    items.sort(key = lambda x: x['ratio'], reverse=True)
+
+    total_value = 0.0
+    knapsack = []
+
+    for item in items:
+        if capacity >= item['weight']:
+            knapsack.append(item)
+            total_value += item['value']
+            capacity -= item['weight']
+        else:
+            fraction = capacity / item['weight']
+            knapsack.append({'name': item['name'], 'weight': item['weight'] * fraction, 'value': item['value'] * fraction})
+            total_value += item['value'] * fraction
+            break
+
+    return knapsack, total_value
+
+if __name__ == "__main__":
+    items = [{'name': 'item1', 'weight' : 10, 'value' : 60 },
+             {'name' : 'item2', 'weight' : 20, 'value' : 100},
+             {'name' : 'item3', 'weight' : 30, 'value' : 120}]
+    
+    max_capacity = 50
+
+    kanpsack_items, max_value = fractional_knapsack(items, max_capacity)
+
+    print("max value in knapsack", max_value)
+
