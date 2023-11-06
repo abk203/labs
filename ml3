@@ -1,0 +1,56 @@
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+%matplotlib inline
+from sklearn.model_selection import train_test_split
+
+df = pd.read_csv("/Users/abhijeetkhandagale/Extras/beproject/Customer-Churn-Records.csv")
+df
+
+sns.countplot(x="Exited", data=df)
+
+df.drop(['RowNumber', 'CustomerId', 'Surname'], axis=1, inplace=True)
+df.shape
+
+geography = pd.get_dummies(df['Geography'], drop_first=True)
+gender = pd.get_dummies(df['Gender'], drop_first=True)
+#card_type = pd.get_dummies(df['Card Type'], drop_first=True)
+
+df = pd.concat([df, geography, gender, card_type])
+df.columns
+
+df.drop(['Geography', 'Gender', 'Card Type', 'Complain', 'Satisfaction Score', 'Point Earned'], axis=1, inplace=True)
+
+X = df.drop(['Exited'], axis=1)
+y = df['Exited']
+
+y = y.dropna(axis=0)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+
+from sklearn.preprocessing import StandardScaler
+sc = StandardScaler()
+X_train = sc.fit_transform(X_train)
+X_test = sc.transform(X_test)
+
+import keras
+from keras.models import Sequential
+from keras.layers import Dense
+
+classifier = Sequential()
+
+classifier.add(Dense(units=6, kernel_initializer="he_uniform", activation="relu", input_dim=14))
+
+classifier.add(Dense(units=6, kernel_initializer="he_uniform", activation="relu"))
+
+classifier.add(Dense(units=1, kernel_initializer="glorot_uniform", activation="sigmoid"))
+
+classifier.compile(optimizer="adam", loss="binary_crossentropy", metrics=['accuracy'])
+
+model_history = classifier.fit(X_train, y_train, batch_size=10,  validation_split=0.33, epochs=10)
+
+model_history.history.keys()
+
+y_pred = classifier.predict(X_test)
+y_pred
